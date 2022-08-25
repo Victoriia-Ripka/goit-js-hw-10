@@ -16,12 +16,18 @@ refs.input.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 //функія обробки інпуту та пошуку країни
 function onInput(event) {
   event.preventDefault();
-  const searchCountry = event.target.value.trim(); //
+  const searchCountry = event.target.value.trim();
 
-  fetchCountries(searchCountry)
-  .then(renderCountryCard)
-  .catch(onFetchError)
-  .finally(() => refs.info.reset()) //&&&
+  //очищення форми, якщо користувач видлив пошуковий запис
+  if(searchCountry == '') {
+    refs.info.innerHTML = '';
+  } else {
+  //виведення даних
+    fetchCountries(searchCountry)
+    .then(renderCountryCard)
+    .catch(onFetchError)
+    // .finally(() => refs.info.reset())  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
+  }
 }
 
 //функція обробки непрвильного вводу назви країни
