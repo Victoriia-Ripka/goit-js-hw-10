@@ -24,7 +24,7 @@ function onInput(event) {
         if (data.length === 1) {
           createCountryCard(data);
         } else if (data.length > 10) {
-          Notify.info(
+          Notiflix.Notify.info(
             'Too many matches found. Please enter a more specific name.'
           );
           clearTemplate();
@@ -32,7 +32,11 @@ function onInput(event) {
           CreateCountriesList(data);
         }
       })
-      .catch(onFetchError);
+      .catch( () => {
+        console.log('catch');
+        onFetchError;
+      }
+      );
   } else {
     clearTemplate();
   }
@@ -48,7 +52,7 @@ function onFetchError() {
 function createCountryCard(country) {
   clearTemplate(); 
   const markup = country.map( item => `<p>
-    <img src="${item.flags.svg}" alt="${item.name.official}" class="info__img"> <span class="info__title">${name.official}</span>
+    <img src="${item.flags.svg}" alt="${item.name.official}" class="info__img"> <span class="info__title">${item.name.official}</span>
   </p>
   <p class="info__text"><span>Capital:</span> ${item.capital}</p>
   <p class="info__text"><span>Population:</span> ${item.population}</p>
