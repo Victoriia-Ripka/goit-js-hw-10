@@ -8,7 +8,7 @@ const DEBOUNCE_DELAY = 300;
 const refs = {
   input: document.querySelector('input'),
   list: document.querySelector('ul'),
-  info: document.querySelector('div'),
+  div: document.querySelector('div'),
 };
 
 refs.input.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
@@ -18,35 +18,58 @@ function onInput(event) {
   event.preventDefault();
   const searchCountry = event.target.value.trim();
 
-  //очищення форми, якщо користувач видлив пошуковий запис
-  if(searchCountry == '') {
-    refs.info.innerHTML = '';
-  } else {
-  //виведення даних
+  if (searchCountry !== '') {
     fetchCountries(searchCountry)
-    .then(renderCountryCard)
-    .catch(onFetchError)
-    // .finally(() => refs.info.reset())  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  
+      .then(data => {
+        if (data.length === 1) {
+          createCountryCard(data);
+        } else if (data.length > 10) {
+          Notify.info(
+            'Too many matches found. Please enter a more specific name.'
+          );
+          clearTemplate();
+        } else if (data.length >= 2 && data.length <= 10) {
+          CreateCountriesList(data);
+        }
+      })
+      .catch(onFetchError);
+  } else {
+    clearTemplate();
   }
 }
 
 //функція обробки непрвильного вводу назви країни
 function onFetchError() {
+  clearTemplate();
   Notiflix.Notify.failure('Ooops, there is no contry with that name');
 }
 
 //створення нової карочки для країни
-function renderCountryCard(country) {
-  const markup = country.map(({name, capital, population, flags, languages}) => {
-    return `<p>
-    <img src="${flags.svg}" alt="${name}" class="info__img"> <span class="info__title">${name.official}</span>
+function createCountryCard(country) {
+  clearTemplate(); 
+  const markup = country.map( item => `<p>
+    <img src="${item.flags.svg}" alt="${item.name.official}" class="info__img"> <span class="info__title">${name.official}</span>
   </p>
-  <p class="info__text"><span>Capital:</span> ${capital}</p>
-  <p class="info__text"><span>Population:</span> ${population}</p>
-  <p class="info__text"><span>Language:</span> ${Object.values(languages)}</p>`
-  }).join('');
+  <p class="info__text"><span>Capital:</span> ${item.capital}</p>
+  <p class="info__text"><span>Population:</span> ${item.population}</p>
+  <p class="info__text"><span>Language:</span> ${Object.values(item.languages)}</p>`
+  ).join('');
 
-  //очищення попееднього та додавання нового списку
-  refs.info.innerHTML = '';
-  refs.info.insertAdjacentHTML('afterbegin', markup);
+  return refs.div.innerHTML = (markup);
+}
+
+//створення списку країн
+function CreateCountriesList(country) {
+  clearTemplate(); 
+  const markup = country.map( item =>  `<li> <p>
+    <img src="${item.flags.svg}" alt="${item.name.official}" class="info__img"> <span class="info__title">${item.name.official}</span>
+  </p></li>`
+  ).join('');
+  return refs.list.innerHTML = (markup);
+}
+
+//очищення попееднього та додавання нового списку
+function clearTemplate () {
+  refs.div.innerHTML = '';
+  refs.list.innerHTML = '';
 }

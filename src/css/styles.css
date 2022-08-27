@@ -29,6 +29,12 @@ span{
   margin: 0 5px 0 0;
 }
 
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
 .info__text{
   font-size: 20px;
   color: #242424;
